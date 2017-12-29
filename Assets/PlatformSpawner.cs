@@ -7,8 +7,11 @@ using UnityEngine;
 
 public class PlatformSpawner : MonoBehaviour {
 
+	public static PlatformSpawner instance; // Singleton design pattern.
+
 	public bool levelWillScroll = true; // If true, then the level scrolls. 
 	public bool procedurallyGenerateLevel = true; // If true, instantiate platforms and procedurally generate the level.
+	public float X_SCROLL_BOUNDS = 10f; // 
 
 	public GameObject plat_3, plat_4, plat_5; // Platform prefabs that span 3, 4, and 5 tiles, respectively.
 
@@ -16,7 +19,6 @@ public class PlatformSpawner : MonoBehaviour {
 	private List<GameObject> npcs; //
 	private List<GameObject> coins; //
 
-	private const float X_SCROLL_BOUNDS = 20f; // 
 	private const float X_BOUNDS = 5.5f; //
 	private const float Y_BOUNDS = 4.5f; //
 
@@ -24,6 +26,10 @@ public class PlatformSpawner : MonoBehaviour {
 	 *
 	 */
 	private void Awake() {
+		// Set up the Singleton.
+		if (instance == null) {
+			instance = this;
+		}
 		if (procedurallyGenerateLevel) {
 			ClearLevel();
 			GenerateLevel();

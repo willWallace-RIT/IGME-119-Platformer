@@ -20,7 +20,7 @@ public class Player : MonoBehaviour {
 	public bool inactive = false; // Whether or not the player should be doing anything.
 
 	private const float GROUND_SPD = 0.125f; // Speed of the player while on the ground.
-	private const float AIR_SPD = 0.09125f; // Speed of the player while in the air.
+	private const float AIR_SPD = 0.0625f; // Speed of the player while in the air.
 	private const float JUMP_VEL = 8f; // Y-Velocity of the player upon jumping.
 	private const float KNOCK_VEL = 4f; // Knockback velocity upon contact with NPC projectile.
 	private const float GCHECK_Y = -0.5f; // Y-position of the ground checker object in relation to the player; it'll be 0.5 units below the player at all times.
@@ -123,7 +123,11 @@ public class Player : MonoBehaviour {
 			sr.flipX = !sr.flipX; // Reverse it to make it right.
 		}
 		interactBox.transform.position = new Vector2(tm.position.x + (0.75f * facing), tm.position.y);
-		ParallaxManager.instance.SetDirection(-1 * newDir); // Ensure that the parallax layers scroll OPPOSITE of our direction.
+		if (Mathf.Abs(tm.position.x) < PlatformSpawner.instance.X_SCROLL_BOUNDS) {
+			ParallaxManager.instance.SetDirection(-1 * newDir); // Ensure that the parallax layers scroll OPPOSITE of our direction.
+		} else {
+			ParallaxManager.instance.SetDirection(0); 
+		}
 		anim.SetBool("isWalking", true);
 	}
 
@@ -177,6 +181,7 @@ public class Player : MonoBehaviour {
 	 * Play the "contact" animation.
 	 */
 	private IEnumerator Contact() {
+		Debug.Log("Contact");
 		this.gameObject.layer = 14; // Set this gameObject's layer to "NPC Contact" (layer 14) so that it no longer comes in contact with anything else besides the floor.
 		// Stop the parallax scrolling. 
 		ParallaxManager.instance.SetDirection(0);
