@@ -9,11 +9,13 @@ public class PlatformSpawner : MonoBehaviour {
 
 	public static PlatformSpawner instance; // Singleton design pattern.
 
-	public bool levelWillScroll = true; // If true, then the level scrolls. 
-	public bool procedurallyGenerateLevel = true; // If true, instantiate platforms and procedurally generate the level.
+	public bool levelWillScroll; // If true, then the level scrolls. 
+	public bool procedurallyGenerateLevel; // If true, instantiate platforms and procedurally generate the level.
 	public float X_SCROLL_BOUNDS = 10f; // 
 
 	public GameObject plat_3, plat_4, plat_5; // Platform prefabs that span 3, 4, and 5 tiles, respectively.
+
+	public GameObject level; // Empty GameObject whose children, combined, form the entire level architecture.
 
 	private List<GameObject> platforms; //
 	private List<GameObject> npcs; //
@@ -34,6 +36,15 @@ public class PlatformSpawner : MonoBehaviour {
 			ClearLevel();
 			GenerateLevel();
 		}
+	}
+
+	/** Moves the level architecture around the Player to simulate movement within a scrolling level.
+	 * NOTE: This function will only be called by the Player, and only in the case that the level will scroll.
+	 * 
+	 * param[moveVec] - a Vector2 which is the OPPOSITE direction that the player is movement, or the vector that moves the level around the player.
+	 */
+	public void MoveLevel(Vector2 moveVec) {
+		level.transform.Translate(moveVec);
 	}
 
 	/**

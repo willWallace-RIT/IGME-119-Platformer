@@ -31,6 +31,8 @@ public class Player : MonoBehaviour {
 	private List<Projectile> clip; // The object pool which contains our projectiles. 
 	private float speed = AIR_SPD; // Speed of the player, which can either be GROUND_SPD or AIR_SPD.
 	private int facing = 1; // The direction that the player faces, either +1 for right or -1 for left.
+	private bool levelScrolls; // A bool indicating whether or not the level will scroll. We set this by grabbing the "levelWillScroll" boolean from the PlatformSpawner.
+	private bool isTouchingBound = false;
 
 	private Animator anim; // Component which toggles different animations for different situations.
 	private Collider2D coll; // Collider2D component allows this player to have contact with things such as the ground, NPCs, projectiles, etc.
@@ -69,6 +71,14 @@ public class Player : MonoBehaviour {
 		interactBox.SetActive(false);
 	}
 
+	/** Grab the value of "levelWillScroll" and put it into our value for "levelScrolls."
+	 * This is called after Awake (in Start) becacuse in Awake of the PlatformSpawner, we set up the singleton, so after Awake 
+	 * and in Start, we ensure that the singleton object is ready to go.
+	 */
+	private void Start() {
+		levelScrolls = PlatformSpawner.instance.levelWillScroll;
+	}
+
 	/** Called every frame, this checks for user input so that the player can move and perform actions.
 	 * 
 	 */
@@ -83,10 +93,10 @@ public class Player : MonoBehaviour {
 		// Left and Right Movement
 		if (Input.GetKey(left)) { // Upon pressing the left button, move left.
 			Reorient(-1);
-			tm.Translate(Vector2.right * facing * speed);
+			Move(Vector2.right * facing * speed);
 		} else if (Input.GetKey(right)) { // Upon pressing the right button, move right.
 			Reorient(1);
-			tm.Translate(Vector2.right * facing * speed);
+			Move(Vector2.right * facing * speed);
 		} else {
 			ParallaxManager.instance.SetDirection(0);
 			anim.SetBool("isWalking", false);
@@ -103,6 +113,26 @@ public class Player : MonoBehaviour {
 		groundCheck.transform.position = new Vector2(tm.position.x, tm.position.y + GCHECK_Y);
 	}
 		
+	/** Handles different modes of movement for the wide variety of games that can be created with this project package.
+	 * If the level scrolls, then move the level architecture instead of the player themselves.
+	 * Otherwise, the player may move in a fixed, single-screen environment.
+	 * 
+	 * param[moveVec] - The vector2 that the player is moving by. Set in Update(), above.
+	 */
+	private void Move(Vector2 moveVec) {
+		if (levelScrolls && !isTouchingBound) { // If the level scrolls...
+			// Don't actually move the player; instead, move the level around them. 
+			// I do this to maintain the parallax illusion, since it breaks when the camera moves around too much.
+			PlatformSpawner.instance.MoveLevel(-moveVec);
+		} else { // With single-screen levels, the player may move.
+			tm.Translate(moveVec);
+		}
+	}
+
+	/** If the Player uses melee-style (close-range) interaction, then this triggers the interaction animation and hitbox.
+	 * Plays the "Interact" animation of the player and sets the interaction hitbox active for a brief amount of time before
+	 * disabling it.
+	 */
 	private IEnumerator InteractBox() {
 		anim.SetTrigger("interact");
 		interactBox.SetActive(true);
@@ -129,21 +159,6 @@ public class Player : MonoBehaviour {
 			ParallaxManager.instance.SetDirection(0); 
 		}
 		anim.SetBool("isWalking", true);
-	}
-
-	/** Called automatically by Unity on the first frame that this object interacts with an object containing a trigger collider.
-	 * If this object hits a coin, then collect it (make it disappear).
-	 * 
-	 * param[coll] - the 2D collider which this object is touching.
-	 * PRECONDITION: The GameObject (in this case, GroundCheck) is required to have a Rigidbody2D in order to use this function.
-	 * PRECONDITION: The Collider2D must be a trigger.
-	 */
-	private void OnTriggerEnter2D(Collider2D coll) {
-		if (coll.gameObject.tag.Equals("Coin")) { // If we touch a coin...
-			Destroy(coll.gameObject); // "Collect it", make it disappear.
-		} else if (coll.gameObject.tag.Equals("NPC")) { // If we touch an NPC projectile...
-			StartCoroutine("Contact"); // React to it.
-		}
 	}
 
 	/** Function called by GroundCheck to update the speed of the player.
@@ -205,5 +220,44 @@ public class Player : MonoBehaviour {
 		}
 		// Load up all of the UI elements.
 		MySceneManager.instance.GameLoadUI();
+	}
+
+	/** Called automatically by Unity on the first frame that this object interacts with an object containing a trigger collider.
+	 * If this object hits a coin, then collect it (make it disappear).
+	 * 
+	 * param[coll] - the 2D collider which this object is touching.
+	 * PRECONDITION: The GameObject (in this case, Player) is required to have a Rigidbody2D in order to use this function.
+	 * PRECONDITION: The Collider2D must be a trigger.
+	 */
+	private void OnTriggerEnter2D(Collider2D coll) {
+		if (coll.gameObject.tag.Equals("Coin")) { // If we touch a coin...
+			Destroy(coll.gameObject); // "Collect it"; make it disappear.
+		} else if (coll.gameObject.tag.Equals("NPC")) { // If we touch an NPC projectile...
+			StartCoroutine("Contact"); // React to it.
+		}
+	}
+
+	/** Called automatically by Unity on every frame that this object interacts with an object containing a collider.
+	 * If the player hits a level bound, then prevent them from moving towards it.
+	 * 
+	 * param[coll] - the 2D collider which this object is touching.
+	 * PRECONDITION: The GameObject (in this case, Player) is required to have a Rigidbody2D in order to use this function.
+	 */
+	private void OnCollisionStay2D (Collision2D coll) {
+		if (coll.gameObject.tag.Equals("Bound")) { // If we touch a bound...
+			isTouchingBound = true;
+		}
+	}
+
+	/** Called automatically by Unity on the final frame that this object interacts with an object containing a collider.
+	 * If the player exits a level bound, then they can once again move.
+	 * 
+	 * param[coll] - the 2D collider which this object is touching.
+	 * PRECONDITION: The GameObject (in this case, Player) is required to have a Rigidbody2D in order to use this function.
+	 */
+	private void OnCollisionExit2D (Collision2D coll) {
+		if (coll.gameObject.tag.Equals("Bound")) { // When we stop colliding with a bound...
+			isTouchingBound = false;
+		}
 	}
 }

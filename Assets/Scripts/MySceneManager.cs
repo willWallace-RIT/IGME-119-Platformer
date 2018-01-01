@@ -11,14 +11,14 @@ using UnityEngine.SceneManagement;
 public class MySceneManager : MonoBehaviour {
 
 	public static MySceneManager instance; // Singleton design pattern
-	public Button playAgain, back; // References to the Play Again and Back buttons during the "Game" scene.
+	public Button playAgain, back; // References to the Play Again and Back buttons during any "Game" scene.
 
-	// Set up the singleton design pattern. Also, if we're in the "Game" scene, hide the buttons.
+	// Set up the singleton design pattern. Also, if we're in the "Fixed Game" or "Scroll Game" scenes, hide the buttons.
 	private void Awake() {
 		if (instance == null) {
 			instance = this;
 		}
-		if (SceneManager.GetActiveScene().name == "Game") { // If we're in the "Game" scene...
+		if (SceneManager.GetActiveScene().name == "Fixed Game" || SceneManager.GetActiveScene().name == "Scroll Game") { // If we're in a "Game" scene...
 			// Disable the two buttons.
 			playAgain.gameObject.SetActive(false);
 			back.gameObject.SetActive(false);
