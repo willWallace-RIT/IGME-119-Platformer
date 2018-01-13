@@ -3,6 +3,7 @@
  */
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -13,15 +14,22 @@ public class MySceneManager : MonoBehaviour {
 	public static MySceneManager instance; // Singleton design pattern
 	public Button playAgain, back; // References to the Play Again and Back buttons during any "Game" scene.
 
-	// Set up the singleton design pattern. Also, if we're in the "Fixed Game" or "Scroll Game" scenes, hide the buttons.
+	private VideoPlayer vid; // Reference to the video player that'll only be populated and used in the "Cutscene" scene.
+
+	// Set up the singleton design pattern.
 	private void Awake() {
 		if (instance == null) {
 			instance = this;
 		}
-		if (SceneManager.GetActiveScene().name == "Fixed Game" || SceneManager.GetActiveScene().name == "Scroll Game") { // If we're in a "Game" scene...
-			// Disable the two buttons.
-			playAgain.gameObject.SetActive(false);
-			back.gameObject.SetActive(false);
+	}
+
+	/** Checks to see if we're playing the cutscene.
+	 * If we are in the cutscene scene, then automatically load the "Game" scene after the video is done playing.
+	 */
+	private void Start() {
+		if (SceneManager.GetActiveScene().name.Equals("Cutscene")) {
+			vid = GameObject.FindObjectOfType<VideoPlayer>();
+			Invoke("LoadGame", (float) vid.clip.length + 1f);
 		}
 	}
 
@@ -35,10 +43,14 @@ public class MySceneManager : MonoBehaviour {
 		SceneManager.LoadScene(sceneName);
 	}
 
-	/** During the "Game" scene, load the UI elements for "Play Again" and "Back".
-	 * 
-	 */
+	// Load the "Game" scene.
+	public void LoadGame() {
+		SceneManager.LoadScene("Game");
+	}
+
+	// During the "Game" scene, load the UI elements for "Play Again" and "Back".
 	public void GameLoadUI() {
+		// Activate the two UI buttons, "Play Again" and "Back".
 		playAgain.gameObject.SetActive(true);
 		back.gameObject.SetActive(true);
 	}
