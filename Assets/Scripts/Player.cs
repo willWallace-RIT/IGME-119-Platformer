@@ -244,6 +244,7 @@ public class Player : MonoBehaviour {
 	 * Play the "contact" animation.
 	 */
 	private IEnumerator Contact() {
+		ScreenManager.instance.PlayerFX(); // Play any specified camera effects for the Player.
 		audi.PlayOneShot(contactSFX);
 		this.gameObject.layer = 14; // Set this gameObject's layer to "NPC Contact" (layer 14) so that it no longer comes in contact with anything else besides the floor.
 		// Stop the parallax scrolling. 
@@ -259,13 +260,17 @@ public class Player : MonoBehaviour {
 			rb.velocity = new Vector2(-facing * KNOCK_VEL, KNOCK_VEL); // Apply physics-based knockback.
 		}
 		yield return new WaitForSeconds(CONTACT_TIME); 
-		if (disappearOnContact) { // If we choose for NPCs to disappear...
+		if (disappearOnContact) { // If we choose for Player to disappear...
 			Destroy(this.gameObject); // Disappear.
-		} else { // NPCs will stay on-screen after contact.
+		} else { // Player will stay on-screen after contact.
 			gameObject.tag = "Untagged"; // Set the nametag to something that can't trigger anything.
 		}
 		// Load up all of the UI elements.
 		MySceneManager.instance.GameLoadUI();
+		// The user won't see the player anyway, so its gameobject should be safe to destroy. This fixes a bug where the level architecture continues to scroll even after Contact.
+		if (tm.position.y <= 6.5f) {
+			this.gameObject.SetActive(false);
+		}
 	}
 
 	/** Called automatically by Unity on the first frame that this object interacts with an object containing a trigger collider.

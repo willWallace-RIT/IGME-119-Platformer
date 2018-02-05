@@ -197,6 +197,7 @@ public class NPC : MonoBehaviour {
 	 * Make this NPC uninteractible, apply knockback if desired, and add to score.
 	 */
 	private IEnumerator Contact() {
+		ScreenManager.instance.NPCFX(); // Play any specified camera effects for the NPC.
 		this.gameObject.layer = 14; // Set this gameObject's layer to "NPC Contact" (layer 14) so that it no longer comes in contact with anything else besides the floor.
 		audi.PlayOneShot(contactSFX); // Play the contact sound effect.
 		inactive = true;
