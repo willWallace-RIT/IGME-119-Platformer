@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour {
 
-	public bool levelWillScroll, levelIsInfiniteAutoScroller, procedurallyGenerateLevel, proceduralLevelHasBottomPlatform; // Booleans corresponding to private getters/setters in PlatformSpawner.
+	public bool levelWillScroll, levelIsInfiniteAutoScroller, procedurallyGenerateLevel, proceduralLevelHasBottomPlatform, levelHasNoCoins; // Booleans corresponding to private getters/setters in PlatformSpawner.
 
 	/** Set all of the PlatformSpawner's "open" variables according to what we want.
 	 * Change the properties of the generated level using the Singleton of the PlatformSpawner.
@@ -17,5 +17,6 @@ public class LevelManager : MonoBehaviour {
 		PlatformSpawner.instance.SetLevelIsInfiniteAutoScroller(levelIsInfiniteAutoScroller);
 		PlatformSpawner.instance.SetProcedurallyGenerateLevel(procedurallyGenerateLevel);
 		PlatformSpawner.instance.SetProceduralLevelHasBottomPlatform(proceduralLevelHasBottomPlatform);
+		PlatformSpawner.instance.SetLevelHasNoCoins(levelHasNoCoins);
 	}
 }

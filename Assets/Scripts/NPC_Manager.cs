@@ -10,7 +10,7 @@ public class NPC_Manager : MonoBehaviour {
 	public static NPC_Manager instance; // Singleton design pattern.
 
 	public bool disappearOnContact, knockbackOnContact, stopToInteract, fallOffPlatforms; // Boolean properties for each NPC. 
-	[Range(1.0f, 40.0f)] // The knockback can be anywhere from 1 to 40.
+	[Range(1.0f, 128.0f)] // The knockback can be anywhere from 1 to 128.
 	public float knockback; // Amount of knockback to apply on NPCs upon contact, if knockbackOnContact is true.
 	public AudioClip interactSFX, contactSFX; // Sound effects to play on an NPC when they perform interaction and contact behaviors.
 

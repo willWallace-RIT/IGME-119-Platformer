@@ -13,6 +13,7 @@ public class PlatformSpawner : MonoBehaviour {
 	private bool levelIsInfiniteAutoScroller; // If true, then the level infinitely moves to the right, spawning new platforms.
 	private bool procedurallyGenerateLevel; // If true, instantiate platforms and procedurally generate the level.
 	private bool proceduralLevelHasBottomPlatform; // If true and the level is procedurally generated, then the level will have a platform at the bottom.
+	private bool levelHasNoCoins; // If true, then the level will NOT contain collectibles.
 
 	public float X_SCROLL_BOUNDS = 10f; // Bounds for the boundary objects in a scrolling level.
 
@@ -122,6 +123,7 @@ public class PlatformSpawner : MonoBehaviour {
 			minChildren = MIN_CHILDREN;
 		}
 		if (!procedurallyGenerateLevel) {
+			DestroyCoins(); // If the user wants to destroy all coins, then do it.
 			return;
 		}
 		ClearLevel(); // Clear the level to make way for the level we're generating now.
@@ -144,6 +146,18 @@ public class PlatformSpawner : MonoBehaviour {
 		}
 		if (level.transform.childCount < minChildren) { // If the level is too barren and sparse...
 			GenerateLevel(); // Re-do it until the level is populated enough.
+		}
+		DestroyCoins(); // If the user wants to destroy all coins, then do it.
+	}
+
+	/** Checks to see if the user wants to destroy all coins; if so, then destroy all coins.
+	 */
+	private void DestroyCoins() {
+		if (levelHasNoCoins) { // Get rid of ALL coins, if so desired.
+			GameObject[] coins = GameObject.FindGameObjectsWithTag("Coin");
+			foreach (GameObject coin in coins) {
+				Destroy(coin.gameObject);
+			}
 		}
 	}
 
@@ -172,6 +186,7 @@ public class PlatformSpawner : MonoBehaviour {
 				}
 			}
 		}
+		DestroyCoins(); // If the user wants to destroy all coins, then do it.
 	}
 
 
@@ -225,5 +240,12 @@ public class PlatformSpawner : MonoBehaviour {
 	*/
 	public void SetProceduralLevelHasBottomPlatform(bool newVar) {
 		proceduralLevelHasBottomPlatform = newVar;
+	}
+
+	/** Setter for the field "levelHasNoCoins".
+	* param[newVar] - the new value of the boolean we're setting.
+	*/
+	public void SetLevelHasNoCoins(bool newVar) {
+		levelHasNoCoins = newVar;
 	}
 }
