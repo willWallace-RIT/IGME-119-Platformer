@@ -200,7 +200,7 @@ public class Player : MonoBehaviour {
 			sr.flipX = !sr.flipX; // Reverse it to make it right.
 		}
 		interactBox.transform.position = new Vector2(tm.position.x + (0.75f * facing), tm.position.y); // Ensure that the interaction hitbox (for melee-style interaction) is in the right spot.
-		if (Mathf.Abs(tm.position.x) < PlatformSpawner.instance.X_SCROLL_BOUNDS) { // If we are in bounds...
+		if (Mathf.Abs(tm.position.x) < PlatformSpawner.instance.GetXScrollBounds()) { // If we are in bounds...
 			ParallaxManager.instance.SetDirection(-1 * newDir); // Ensure that the parallax layers scroll OPPOSITE of our direction to give the desired effect.
 		} else { // We are out of bounds.
 			ParallaxManager.instance.SetDirection(0); // Do not move the parallax layers.
@@ -268,7 +268,7 @@ public class Player : MonoBehaviour {
 		// Load up all of the UI elements.
 		MySceneManager.instance.GameLoadUI();
 		// The user won't see the player anyway, so its gameobject should be safe to destroy. This fixes a bug where the level architecture continues to scroll even after Contact.
-		if (tm.position.y <= 6.5f) {
+		if (tm.position.y <= -6.5f) {
 			this.gameObject.SetActive(false);
 		}
 	}

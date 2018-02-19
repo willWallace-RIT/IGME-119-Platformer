@@ -15,7 +15,7 @@ public class PlatformSpawner : MonoBehaviour {
 	private bool proceduralLevelHasBottomPlatform; // If true and the level is procedurally generated, then the level will have a platform at the bottom.
 	private bool levelHasNoCoins; // If true, then the level will NOT contain collectibles.
 
-	public float X_SCROLL_BOUNDS = 25f; // Bounds for the boundary objects in a scrolling level.
+	private float xScrollBounds = 25f; // Bounds for the boundary objects in a scrolling level.
 
 	public GameObject[] prefabs; // Platforming prefabs for randomly generating a level.
 	public GameObject[] bounds; // The left and right screen bounds. We will set their X-positions based on whether or not the level will scroll.
@@ -31,7 +31,6 @@ public class PlatformSpawner : MonoBehaviour {
 
 	private const float X_BOUNDS = 5.5f; // Magnitude of the x-positions in which to spawn platform prefabs; spawn prefabs from -5.5 to +5.5.
 	private const float Y_BOUNDS = 4.5f; // Magnitude of the y-positions in which to spawn platform prefabs; spawn prefabs from -4.5 to +4.5.
-	private const float SCROLL_BOUND_POS = 27f; // Position of the bound GameObjects in a scrolling, procedurally-generated level.
 	private const float BOUND_POS = 6.5f; // Position of the bound GameObjects in a non-scrolling, procedurally-generated level.
 	private const int MIN_CHILDREN = 32; // Minimum amount of children the level object may have for a non-scrolling, procedurally-generated level.
 	private const int SCROLL_MIN_CHILDREN = 120; // Minimum amount of children the level object may have for a scrolling, procedurally-generated level.
@@ -110,10 +109,10 @@ public class PlatformSpawner : MonoBehaviour {
 		float maxBound = 0;
 		int minChildren = 0;
 		if (levelWillScroll) { // Set up the bounds for a scrolling (but fixed-length) level.
-			xBound = -X_SCROLL_BOUNDS;
-			maxBound = X_SCROLL_BOUNDS;
-			bounds[0].transform.position = new Vector2(-SCROLL_BOUND_POS, 0);
-			bounds[1].transform.position = new Vector2(SCROLL_BOUND_POS, 0);
+			xBound = -xScrollBounds;
+			maxBound = xScrollBounds;
+			bounds[0].transform.position = new Vector2(-xScrollBounds - 2, 0); // I do +/- 2 right here so that larger platforms aren't partially out of bounds.
+			bounds[1].transform.position = new Vector2(xScrollBounds + 2, 0);
 			minChildren = SCROLL_MIN_CHILDREN;
 		} else { // Set up the bounds for a single-screen (but fixed-length) level.
 			xBound = -X_BOUNDS;
@@ -209,6 +208,12 @@ public class PlatformSpawner : MonoBehaviour {
 		return levelIsInfiniteAutoScroller;
 	}
 
+	/** Getter for the field "xScrollBounds".
+	 * return - the value of xScrollBounds, a float. 
+	 */
+	public float GetXScrollBounds() {
+		return xScrollBounds;
+	}
 
 	///////////////
 	/// SETTERS ///
@@ -247,5 +252,12 @@ public class PlatformSpawner : MonoBehaviour {
 	*/
 	public void SetLevelHasNoCoins(bool newVar) {
 		levelHasNoCoins = newVar;
+	}
+
+	/** Setter for the field "xScrollBounds".
+	 * param[newVar] - the new value of the float we're setting.
+	 */
+	public void SetXScrollBounds(float newVar) {
+		xScrollBounds = newVar;
 	}
 }

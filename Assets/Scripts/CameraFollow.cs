@@ -20,7 +20,7 @@ public class CameraFollow : MonoBehaviour {
 	// Find out whether or not we're going to be scrolling by contacting the PlatformSpawner singleton.
 	private void Start() {
 		scroll = PlatformSpawner.instance.GetLevelWillScroll();
-		MAX_X = PlatformSpawner.instance.X_SCROLL_BOUNDS;
+		MAX_X = PlatformSpawner.instance.GetXScrollBounds();
 	}
 
 	// Set our position to the player's X-position.
