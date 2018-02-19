@@ -15,7 +15,7 @@ public class PlatformSpawner : MonoBehaviour {
 	private bool proceduralLevelHasBottomPlatform; // If true and the level is procedurally generated, then the level will have a platform at the bottom.
 	private bool levelHasNoCoins; // If true, then the level will NOT contain collectibles.
 
-	public float X_SCROLL_BOUNDS = 10f; // Bounds for the boundary objects in a scrolling level.
+	public float X_SCROLL_BOUNDS = 25f; // Bounds for the boundary objects in a scrolling level.
 
 	public GameObject[] prefabs; // Platforming prefabs for randomly generating a level.
 	public GameObject[] bounds; // The left and right screen bounds. We will set their X-positions based on whether or not the level will scroll.
@@ -31,10 +31,10 @@ public class PlatformSpawner : MonoBehaviour {
 
 	private const float X_BOUNDS = 5.5f; // Magnitude of the x-positions in which to spawn platform prefabs; spawn prefabs from -5.5 to +5.5.
 	private const float Y_BOUNDS = 4.5f; // Magnitude of the y-positions in which to spawn platform prefabs; spawn prefabs from -4.5 to +4.5.
-	private const float SCROLL_BOUND_POS = 13.5f; // Position of the bound GameObjects in a scrolling, procedurally-generated level.
+	private const float SCROLL_BOUND_POS = 27f; // Position of the bound GameObjects in a scrolling, procedurally-generated level.
 	private const float BOUND_POS = 6.5f; // Position of the bound GameObjects in a non-scrolling, procedurally-generated level.
 	private const int MIN_CHILDREN = 32; // Minimum amount of children the level object may have for a non-scrolling, procedurally-generated level.
-	private const int SCROLL_MIN_CHILDREN = 60; // Minimum amount of children the level object may have for a scrolling, procedurally-generated level.
+	private const int SCROLL_MIN_CHILDREN = 120; // Minimum amount of children the level object may have for a scrolling, procedurally-generated level.
 
 	// Set up the Singleton.
 	private void Awake() {
