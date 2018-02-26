@@ -39,7 +39,7 @@ public class CameraFX : MonoBehaviour {
 	private IEnumerator ScreenShake() {
 		float timer = 0;
 		float xPos = shakeTime;
-		while (timer < shakeTime) {
+		while (timer < (shakeTime * 4)) { // Correction to the multiplication by four, down below.
 			xPos = shakeMagnitude * (Mathf.Pow(E, -timer) * Mathf.Cos(2 * Mathf.PI * timer));
 			transform.position = new Vector3(xPos, transform.position.y, transform.position.z);
 			timer += Time.deltaTime * 4; // I believe that the effect looks better if we multiply the timer by 4.

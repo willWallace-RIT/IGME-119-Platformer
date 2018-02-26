@@ -8,13 +8,15 @@ using System.Collections.Generic;
 public class NPC : MonoBehaviour {
 
 	public Projectile projectile; // The projectile prefab that we'll add to our clip (and eventually shoot).
+	public GameObject interactBox; // If we don't shoot, then we use close-range interactions; this is the GameObject containing the hitbox (trigger) for it.
 
 	private bool disappearOnContact; // If checked, then the NPC will disappear after their "contact" animation.
 	private bool knockbackOnContact; // If checked, then the NPC will have some knockback applied during their "contact" animation.
 	private float knockback; // If the above (knockbackOnContact) is checked, then this number expresses the amount of knockback for this character.
 	private bool stopToInteract; // If checked, then the NPC will stop for a brief moment before performing their "interacting" behavior.
 	private bool fallOffPlatforms; // If checked, then the NPC won't prevent itself from falling off platforms.
-	private AudioClip interactSFX, contactSFX; // Sound effects for interaction (shooting) and contact with a player's interaction.
+	private bool isShooter; // If checked, then the NPC will shoot projectiles; otherwise, the NPC will use close-range interaction.
+	private AudioClip interactSFX, contactSFX; // Sound effects for interaction and contact with a player's interaction.
 	public int facing = 1; // The direction the NPC faces, either +1 for right or -1 for left.
 
 	private Transform level; // Reference to the transform of the level architecture.
@@ -59,6 +61,8 @@ public class NPC : MonoBehaviour {
 		}
 		level = GameObject.Find("Level Architecture").transform; // Grab a reference to the level's transform.
 		timer += Random.Range(-1f, 1f); // Add a bit of randomization to the interaction timer...
+		interactBox = transform.Find("NPC_Interact_Hitbox").gameObject;
+		interactBox.SetActive(false);
 	}
 
 	/** In the infinite case where we reuse NPCs, reset all of their behaviors if they were interacted with prior.
@@ -133,8 +137,14 @@ public class NPC : MonoBehaviour {
 			yield return new WaitForSeconds(Time.deltaTime); 
 		}
 		// Perform the interaction.
-		ShootFromPool();
 		audi.PlayOneShot(interactSFX); // Play the interaction sound effect.
+		if (isShooter) {
+			ShootFromPool();
+		} else {
+			interactBox.SetActive(true); // Set active the hitbox.
+			yield return new WaitForSeconds(INTERACT_DURATION); // Let the hitbox remain active for a bit of time.
+			interactBox.SetActive(false); // Deactivate the hitbox.
+		}
 		yield return new WaitForSeconds(INTERACT_DURATION); 
 		anim.ResetTrigger("interact");
 		interacting = false;
@@ -273,5 +283,12 @@ public class NPC : MonoBehaviour {
 	public void SetSFX(AudioClip intSFX, AudioClip contSFX) {
 		interactSFX = intSFX;
 		contactSFX = contSFX;
+	}
+
+	/** Set the value for isShooter
+	 * param[newVal] - the new value for this boolean.
+	 */
+	public void SetIsShooter(bool newVal) {
+		isShooter = newVal;
 	}
 }
